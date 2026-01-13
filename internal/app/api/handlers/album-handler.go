@@ -1,44 +1,28 @@
-package main
+package handlers
 
 import (
+	"learing_go/simple_crud/internal/app/api/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-// album represents data about a record album.
-type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+type AlbumHandler struct {
 }
 
-// albums slice to seed record album data.
-var albums = []album{
+var albums = []models.Album{
 	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
 	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
-func main() {
-	router := gin.Default()
-	router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumByID)
-	router.POST("/albums", postAlbums)
-	router.DELETE("/albums/:id", deleteAlbum)
-	router.PUT("/albums/:id", updateAlbum)
-	router.Run("localhost:8080")
-}
-
-// getAlbums responds with the list of all albums as JSON.
-func getAlbums(context *gin.Context) {
+func (h *AlbumHandler) GetAlbums(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, albums)
 }
 
 // getAlbumByID locates the album whose ID value matches the id
 // parameter sent by the client, then returns that album as a response.
-func getAlbumByID(context *gin.Context) {
+func (h *AlbumHandler) GetAlbumByID(context *gin.Context) {
 	id := context.Param("id")
 
 	// Loop over the list of albums, looking for
@@ -53,8 +37,8 @@ func getAlbumByID(context *gin.Context) {
 }
 
 // postAlbums adds an album from JSON received in the request body.
-func postAlbums(context *gin.Context) {
-	var newAlbum album
+func (h *AlbumHandler) PostAlbums(context *gin.Context) {
+	var newAlbum models.Album
 
 	if err := context.BindJSON(&newAlbum); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -66,7 +50,7 @@ func postAlbums(context *gin.Context) {
 }
 
 // deleteAlbum deletes an album from the list.
-func deleteAlbum(context *gin.Context) {
+func (h *AlbumHandler) DeleteAlbum(context *gin.Context) {
 	id := context.Param("id")
 	for i, album := range albums {
 		if album.ID == id {
@@ -79,9 +63,9 @@ func deleteAlbum(context *gin.Context) {
 }
 
 // updateAlbum updates an album from JSON received in the request body.
-func updateAlbum(context *gin.Context) {
+func (h *AlbumHandler) UpdateAlbum(context *gin.Context) {
 	id := context.Param("id")
-	var newAlbum album
+	var newAlbum models.Album
 	for i, album := range albums {
 		if album.ID == id {
 			if err := context.BindJSON(&newAlbum); err != nil {
