@@ -1,9 +1,12 @@
+.PHONY: build run test
+
+default: run
+
 build:
-	go build -o bin/api cmd/api/main.go
+	@go build -o bin/api cmd/api/main.go
 
 run:
-	go run cmd/api/main.go
+	@go run cmd/api/main.go
 
-.PHONY: test
 test:
-	go test -v ./...
+	@go test -v ./...
