@@ -2,13 +2,15 @@ package main
 
 import (
 	"learing_go/simple_crud/internal/app/api/handlers"
+	"learing_go/simple_crud/internal/app/api/repository"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-	albumHandler := handlers.AlbumHandler{}
+	albumRepository := repository.NewAlbumJsonRepository()
+	albumHandler := handlers.NewAlbumHandler(albumRepository)
 	router.GET("/albums", albumHandler.GetAlbums)
 	router.GET("/albums/:id", albumHandler.GetAlbumByID)
 	router.POST("/albums", albumHandler.PostAlbums)
