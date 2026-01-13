@@ -1,6 +1,6 @@
 # Simple CRUD API
 
-This project is a simple CRUD (Create, Read, Update, Delete) API for managing a collection of vintage vinyl albums. It is built using Go and the [Gin Web Framework](https://github.com/gin-gonic/gin).
+This project is a simple CRUD (Create, Read, Update, Delete) API for managing a collection of vintage vinyl albums. It is built using Go and the [Gin Web Framework](https://github.com/gin-gonic/gin). The project folder hierarchy is inspired by the recommended [GoLang community layout](https://github.com/golang-standards/project-layout).
 
 ## Prerequisites
 
@@ -16,15 +16,23 @@ This project is a simple CRUD (Create, Read, Update, Delete) API for managing a 
     go mod tidy
     ```
 
-## Running the Application
+## Running the Application {#running-application}
 
 Start the server using the following command:
 
 ```bash
-go run .
+go run cmd/api/main.go
 ```
 
 The server will start on `localhost:8080`.
+
+### Makefile
+
+Another way to run the project is using the Makefile tasks definition. The following ones are available:
+
+- just `make` or `make run`: executes the same command explained before inside [Running the Application](#running-application);
+- `make build`: creates the binary file inside bin folder;
+- `make test`: runs tests in all project subfolders
 
 ## API Endpoints
 
@@ -33,37 +41,37 @@ The API provides the following endpoints:
 ### 1. Get All Albums
 Retrieves a list of all available albums.
 
-- **URL**: `/albums`
+- **URL**: `/v1/albums`
 - **Method**: `GET`
 - **Response**: JSON array of albums.
 
 **Example Request:**
 ```bash
-curl http://localhost:8080/albums
+curl http://localhost:8080/v1/albums
 ```
 
 ### 2. Get Album by ID
 Retrieves details of a specific album by its ID.
 
-- **URL**: `/albums/:id`
+- **URL**: `/v1/albums/:id`
 - **Method**: `GET`
 - **Response**: JSON object of the album.
 
 **Example Request:**
 ```bash
-curl http://localhost:8080/albums/2
+curl http://localhost:8080/v1/albums/2
 ```
 
 ### 3. Add a New Album
 Adds a new album to the collection.
 
-- **URL**: `/albums`
+- **URL**: `/v1/albums`
 - **Method**: `POST`
 - **Body**: JSON object representing the new album.
 
 **Example Request:**
 ```bash
-curl http://localhost:8080/albums \
+curl http://localhost:8080/v1/albums \
     --include \
     --header "Content-Type: application/json" \
     --request "POST" \
@@ -73,13 +81,13 @@ curl http://localhost:8080/albums \
 ### 4. Update an Album
 Updates an existing album's details.
 
-- **URL**: `/albums/:id`
+- **URL**: `/v1/albums/:id`
 - **Method**: `PUT`
 - **Body**: JSON object with updated album data.
 
 **Example Request:**
 ```bash
-curl http://localhost:8080/albums/1 \
+curl http://localhost:8080/v1/albums/1 \
     --include \
     --header "Content-Type: application/json" \
     --request "PUT" \
@@ -89,13 +97,17 @@ curl http://localhost:8080/albums/1 \
 ### 5. Delete an Album
 Removes an album from the collection.
 
-- **URL**: `/albums/:id`
+- **URL**: `/v1/albums/:id`
 - **Method**: `DELETE`
 
 **Example Request:**
 ```bash
-curl -X DELETE http://localhost:8080/albums/1
+curl -X DELETE http://localhost:8080/v1/albums/1
 ```
+
+### API test calls
+
+All the api calls is defined inside api-test directory using .http files with plain text declaration. IDEs like VS Code (with REST Client Extension) and JetBrains (with HTTP Client support) offer simple way to test the api endpoints.
 
 ## Data Structure
 
