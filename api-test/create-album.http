@@ -1,0 +1,9 @@
+POST http://localhost:8080/albums
+Content-Type: application/json
+
+{
+    "id": "4",
+    "title": "Blue Train",
+    "artist": "John Coltrane",
+    "price": 56.99
+}
