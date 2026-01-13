@@ -1,1 +1,1 @@
-DELETE http://localhost:8080/albums/4
+DELETE http://localhost:8080/v1/albums/4

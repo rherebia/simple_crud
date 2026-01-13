@@ -21,7 +21,7 @@ func TestShouldGetAlbums(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.GET("/albums", albumHandler.GetAlbums)
+	r.GET("/v1/albums", albumHandler.GetAlbums)
 
 	expectedAlbums := []models.Album{
 		{
@@ -44,7 +44,7 @@ func TestShouldGetAlbums(t *testing.T) {
 		},
 	}
 
-	req, _ := http.NewRequest(http.MethodGet, "/albums", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/albums", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -63,7 +63,7 @@ func TestShouldGetSingleAlbum(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.GET("/albums/:id", albumHandler.GetAlbumByID)
+	r.GET("/v1/albums/:id", albumHandler.GetAlbumByID)
 
 	expectedAlbum := models.Album{
 		ID:     "1",
@@ -72,7 +72,7 @@ func TestShouldGetSingleAlbum(t *testing.T) {
 		Price:  56.99,
 	}
 
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/albums/%v", expectedAlbum.ID), nil)
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/v1/albums/%v", expectedAlbum.ID), nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -90,9 +90,9 @@ func TestShouldNotFindAlbumById(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.GET("/albums/:id", albumHandler.GetAlbumByID)
+	r.GET("/v1/albums/:id", albumHandler.GetAlbumByID)
 
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/albums/%v", "4"), nil)
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/v1/albums/%v", "4"), nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -110,8 +110,8 @@ func TestShouldCreateAlbum(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.GET("/albums", albumHandler.GetAlbums)
-	r.POST("/albums", albumHandler.PostAlbums)
+	r.GET("/v1/albums", albumHandler.GetAlbums)
+	r.POST("/v1/albums", albumHandler.PostAlbums)
 
 	newAlbum := models.Album{
 		ID:     "4",
@@ -141,7 +141,7 @@ func TestShouldCreateAlbum(t *testing.T) {
 		},
 	}
 
-	req, _ := http.NewRequest(http.MethodGet, "/albums", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/v1/albums", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -153,7 +153,7 @@ func TestShouldCreateAlbum(t *testing.T) {
 	assert.Equal(t, initialAlbums, actualAlbums)
 
 	jsonData, _ := json.Marshal(newAlbum)
-	req, _ = http.NewRequest(http.MethodPost, "/albums", bytes.NewBuffer(jsonData))
+	req, _ = http.NewRequest(http.MethodPost, "/v1/albums", bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -169,7 +169,7 @@ func TestShouldCreateAlbum(t *testing.T) {
 	finalAlbums := slices.Clone(initialAlbums)
 	finalAlbums = append(finalAlbums, newAlbum)
 
-	req, _ = http.NewRequest(http.MethodGet, "/albums", nil)
+	req, _ = http.NewRequest(http.MethodGet, "/v1/albums", nil)
 	w = httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -186,7 +186,7 @@ func TestShouldUpdateAlbum(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.PUT("/albums/:id", albumHandler.UpdateAlbum)
+	r.PUT("/v1/albums/:id", albumHandler.UpdateAlbum)
 
 	updatedAlbum := models.Album{
 		ID:     "1",
@@ -196,7 +196,7 @@ func TestShouldUpdateAlbum(t *testing.T) {
 	}
 
 	jsonData, _ := json.Marshal(updatedAlbum)
-	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("/albums/%v", "1"), bytes.NewBuffer(jsonData))
+	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("/v1/albums/%v", "1"), bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -215,9 +215,9 @@ func TestShouldDeleteAlbum(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.DELETE("/albums/:id", albumHandler.DeleteAlbum)
+	r.DELETE("/v1/albums/:id", albumHandler.DeleteAlbum)
 
-	req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/albums/%v", "1"), nil)
+	req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/v1/albums/%v", "1"), nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -235,9 +235,9 @@ func TestShouldNotDeleteAbsentAlbum(t *testing.T) {
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
-	r.DELETE("/albums/:id", albumHandler.DeleteAlbum)
+	r.DELETE("/v1/albums/:id", albumHandler.DeleteAlbum)
 
-	req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/albums/%v", "4"), nil)
+	req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/v1/albums/%v", "4"), nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
