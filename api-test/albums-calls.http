@@ -1,0 +1,30 @@
+@base_url = http://localhost:8080
+
+### Get all albums
+GET {{base_url}}/v1/albums
+
+### Get album by id
+GET {{base_url}}/v1/albums/1
+
+### Create album
+POST {{base_url}}/v1/albums
+Content-Type: application/json
+
+{
+    "title": "Blue Train",
+    "artist": "John Coltrane",
+    "price": 56.99
+}
+
+### Update album
+PUT {{base_url}}/v1/albums/1
+Content-Type: application/json
+
+{
+    "title": "Blue Train",
+    "artist": "John Coltrane",
+    "price": 59.99
+}
+
+### Delete album
+DELETE {{base_url}}/v1/albums/4

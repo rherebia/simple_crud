@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestShouldGetAlbums(t *testing.T) {
+func TestShouldGetAlbumsWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
@@ -25,19 +25,19 @@ func TestShouldGetAlbums(t *testing.T) {
 
 	expectedAlbums := []models.Album{
 		{
-			ID:     "1",
+			ID:     1,
 			Title:  "Blue Train",
 			Artist: "John Coltrane",
 			Price:  56.99,
 		},
 		{
-			ID:     "2",
+			ID:     2,
 			Title:  "Jeru",
 			Artist: "Gerry Mulligan",
 			Price:  17.99,
 		},
 		{
-			ID:     "3",
+			ID:     3,
 			Title:  "Sarah Vaughan and Clifford Brown",
 			Artist: "Sarah Vaughan",
 			Price:  39.99,
@@ -58,7 +58,7 @@ func TestShouldGetAlbums(t *testing.T) {
 	assert.Equal(t, expectedAlbums, actualAlbums)
 }
 
-func TestShouldGetSingleAlbum(t *testing.T) {
+func TestShouldGetSingleAlbumWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
@@ -66,7 +66,7 @@ func TestShouldGetSingleAlbum(t *testing.T) {
 	r.GET("/v1/albums/:id", albumHandler.GetAlbumByID)
 
 	expectedAlbum := models.Album{
-		ID:     "1",
+		ID:     1,
 		Title:  "Blue Train",
 		Artist: "John Coltrane",
 		Price:  56.99,
@@ -85,7 +85,7 @@ func TestShouldGetSingleAlbum(t *testing.T) {
 	assert.Equal(t, expectedAlbum, actualAlbum)
 }
 
-func TestShouldNotFindAlbumById(t *testing.T) {
+func TestShouldNotFindAlbumByIdWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
@@ -105,7 +105,7 @@ func TestShouldNotFindAlbumById(t *testing.T) {
 	assert.Equal(t, data["message"], "album not found")
 }
 
-func TestShouldCreateAlbum(t *testing.T) {
+func TestShouldCreateAlbumWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
@@ -114,7 +114,7 @@ func TestShouldCreateAlbum(t *testing.T) {
 	r.POST("/v1/albums", albumHandler.PostAlbums)
 
 	newAlbum := models.Album{
-		ID:     "4",
+		ID:     4,
 		Title:  "On and On",
 		Artist: "Jack Johnson",
 		Price:  32.99,
@@ -122,19 +122,19 @@ func TestShouldCreateAlbum(t *testing.T) {
 
 	initialAlbums := []models.Album{
 		{
-			ID:     "1",
+			ID:     1,
 			Title:  "Blue Train",
 			Artist: "John Coltrane",
 			Price:  56.99,
 		},
 		{
-			ID:     "2",
+			ID:     2,
 			Title:  "Jeru",
 			Artist: "Gerry Mulligan",
 			Price:  17.99,
 		},
 		{
-			ID:     "3",
+			ID:     3,
 			Title:  "Sarah Vaughan and Clifford Brown",
 			Artist: "Sarah Vaughan",
 			Price:  39.99,
@@ -181,7 +181,7 @@ func TestShouldCreateAlbum(t *testing.T) {
 	assert.Equal(t, finalAlbums, albumsAfterCreation)
 }
 
-func TestShouldUpdateAlbum(t *testing.T) {
+func TestShouldUpdateAlbumWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
@@ -189,7 +189,7 @@ func TestShouldUpdateAlbum(t *testing.T) {
 	r.PUT("/v1/albums/:id", albumHandler.UpdateAlbum)
 
 	updatedAlbum := models.Album{
-		ID:     "1",
+		ID:     1,
 		Title:  "Californication",
 		Artist: "Red Hot Chili Peppers",
 		Price:  40.99,
@@ -210,7 +210,7 @@ func TestShouldUpdateAlbum(t *testing.T) {
 	assert.Equal(t, data["message"], "album updated")
 }
 
-func TestShouldDeleteAlbum(t *testing.T) {
+func TestShouldDeleteAlbumWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
@@ -230,7 +230,7 @@ func TestShouldDeleteAlbum(t *testing.T) {
 	assert.Equal(t, data["message"], "album deleted")
 }
 
-func TestShouldNotDeleteAbsentAlbum(t *testing.T) {
+func TestShouldNotDeleteAbsentAlbumWithSqlite(t *testing.T) {
 	albumRepository := repository.NewAlbumJsonRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 

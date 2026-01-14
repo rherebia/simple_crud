@@ -1,9 +1,0 @@
-PUT http://localhost:8080/v1/albums/1
-Content-Type: application/json
-
-{
-    "id": "1",
-    "title": "Blue Train",
-    "artist": "John Coltrane",
-    "price": 59.99
-}

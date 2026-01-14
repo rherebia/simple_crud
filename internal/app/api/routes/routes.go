@@ -11,6 +11,7 @@ func RegisterRoutes(server *gin.Engine) {
 	v1 := server.Group("/v1")
 
 	albumRepository := repository.NewAlbumJsonRepository()
+	// albumRepository := repository.NewAlbumSqliteRepository()
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	v1.GET("/albums", albumHandler.GetAlbums)
