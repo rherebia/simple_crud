@@ -27,4 +27,4 @@ Content-Type: application/json
 }
 
 ### Delete album
-DELETE {{base_url}}/v1/albums/4
+DELETE {{base_url}}/v1/albums/2

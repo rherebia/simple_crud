@@ -1,16 +1,17 @@
 package repository
 
 import (
-	"learing_go/simple_crud/internal/app/api/db"
+	"database/sql"
 	"learing_go/simple_crud/internal/app/api/models"
 )
 
 type AlbumSqliteRepository struct {
+	db *sql.DB
 }
 
 func (r *AlbumSqliteRepository) GetAlbums() ([]models.Album, error) {
 	query := "SELECT * FROM albums"
-	rows, err := db.DB.Query(query)
+	rows, err := r.db.Query(query)
 
 	if err != nil {
 		return nil, err
@@ -35,7 +36,7 @@ func (r *AlbumSqliteRepository) GetAlbums() ([]models.Album, error) {
 
 func (r *AlbumSqliteRepository) GetAlbumById(id int64) (*models.Album, error) {
 	query := "SELECT * FROM albums WHERE id = ?"
-	row := db.DB.QueryRow(query, id)
+	row := r.db.QueryRow(query, id)
 
 	var album models.Album
 	err := row.Scan(&album.ID, &album.Title, &album.Artist, &album.Price)
@@ -52,7 +53,7 @@ func (r *AlbumSqliteRepository) CreateAlbum(album *models.Album) error {
 	INSERT INTO albums(title, artist, price)
 	VALUES (?, ?, ?)`
 
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 
 	if err != nil {
 		return err
@@ -75,7 +76,7 @@ func (r *AlbumSqliteRepository) CreateAlbum(album *models.Album) error {
 func (r *AlbumSqliteRepository) DeleteAlbum(id int64) error {
 	query := "DELETE FROM albums WHERE id = ?"
 
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 
 	if err != nil {
 		return err
@@ -93,7 +94,7 @@ func (r *AlbumSqliteRepository) UpdateAlbum(updatedAlbum models.Album) error {
 	SET title = ?, artist = ?, price = ?
 	WHERE id = ?
 	`
-	stmt, err := db.DB.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 
 	if err != nil {
 		return err
@@ -105,6 +106,6 @@ func (r *AlbumSqliteRepository) UpdateAlbum(updatedAlbum models.Album) error {
 	return err
 }
 
-func NewAlbumSqliteRepository() AlbumRepository {
-	return &AlbumSqliteRepository{}
+func NewAlbumSqliteRepository(db *sql.DB) AlbumRepository {
+	return &AlbumSqliteRepository{db}
 }

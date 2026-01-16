@@ -26,6 +26,10 @@ go run cmd/api/main.go
 
 The server will start on `localhost:8080`.
 
+### Environment Variables
+
+There is a configuration expecting the definition of an environment variable when instantiating the album repository. The variable STORE_TYPE could be defined using the .env file and might be defined with SQLITE value to activate the respective repository. In absense of that variable, the implementation will fallback to use json in memory repository.
+
 ### Makefile
 
 Another way to run the project is using the Makefile tasks definition. The following ones are available:

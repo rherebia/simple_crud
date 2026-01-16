@@ -81,6 +81,13 @@ func (h *AlbumHandler) DeleteAlbum(context *gin.Context) {
 		return
 	}
 
+	album, err := h.repo.GetAlbumById(id)
+
+	if album == nil || err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"message": "album not found"})
+		return
+	}
+
 	err = h.repo.DeleteAlbum(id)
 
 	if err != nil {

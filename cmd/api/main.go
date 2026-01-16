@@ -1,6 +1,7 @@
 package main
 
 import (
+	"learing_go/simple_crud/internal/app/api/config"
 	"learing_go/simple_crud/internal/app/api/db"
 	"learing_go/simple_crud/internal/app/api/routes"
 
@@ -8,6 +9,8 @@ import (
 )
 
 func main() {
+	config.Load()
+
 	db.InitDB()
 
 	router := gin.Default()

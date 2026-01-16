@@ -2,8 +2,10 @@ package tests
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"learing_go/simple_crud/internal/app/api/db"
 	"learing_go/simple_crud/internal/app/api/handlers"
 	"learing_go/simple_crud/internal/app/api/models"
 	"learing_go/simple_crud/internal/app/api/repository"
@@ -16,32 +18,55 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func setupTestDB(t *testing.T) *sql.DB {
+	database, err := sql.Open("sqlite3", "file::memory:?cache=shared")
+	if err != nil {
+		t.Fatalf("failed to open database: %v", err)
+	}
+
+	db.CreateTables(database)
+
+	return database
+}
+
 func TestShouldGetAlbumsWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
+	db := setupTestDB(t)
+	defer db.Close()
+
+	albumRepository := repository.NewAlbumSqliteRepository(db)
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
+
+	album1 := models.Album{
+		ID:     1,
+		Title:  "Blue Train",
+		Artist: "John Coltrane",
+		Price:  56.99,
+	}
+	albumRepository.CreateAlbum(&album1)
+
+	album2 := models.Album{
+		ID:     2,
+		Title:  "Jeru",
+		Artist: "Gerry Mulligan",
+		Price:  17.99,
+	}
+	albumRepository.CreateAlbum(&album2)
+
+	album3 := models.Album{
+		ID:     3,
+		Title:  "Sarah Vaughan and Clifford Brown",
+		Artist: "Sarah Vaughan",
+		Price:  39.99,
+	}
+	albumRepository.CreateAlbum(&album3)
 
 	r := gin.Default()
 	r.GET("/v1/albums", albumHandler.GetAlbums)
 
 	expectedAlbums := []models.Album{
-		{
-			ID:     1,
-			Title:  "Blue Train",
-			Artist: "John Coltrane",
-			Price:  56.99,
-		},
-		{
-			ID:     2,
-			Title:  "Jeru",
-			Artist: "Gerry Mulligan",
-			Price:  17.99,
-		},
-		{
-			ID:     3,
-			Title:  "Sarah Vaughan and Clifford Brown",
-			Artist: "Sarah Vaughan",
-			Price:  39.99,
-		},
+		album1,
+		album2,
+		album3,
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, "/v1/albums", nil)
@@ -59,11 +84,11 @@ func TestShouldGetAlbumsWithSqlite(t *testing.T) {
 }
 
 func TestShouldGetSingleAlbumWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
-	albumHandler := handlers.NewAlbumHandler(albumRepository)
+	db := setupTestDB(t)
+	defer db.Close()
 
-	r := gin.Default()
-	r.GET("/v1/albums/:id", albumHandler.GetAlbumByID)
+	albumRepository := repository.NewAlbumSqliteRepository(db)
+	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	expectedAlbum := models.Album{
 		ID:     1,
@@ -71,6 +96,10 @@ func TestShouldGetSingleAlbumWithSqlite(t *testing.T) {
 		Artist: "John Coltrane",
 		Price:  56.99,
 	}
+	albumRepository.CreateAlbum(&expectedAlbum)
+
+	r := gin.Default()
+	r.GET("/v1/albums/:id", albumHandler.GetAlbumByID)
 
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/v1/albums/%v", expectedAlbum.ID), nil)
 	w := httptest.NewRecorder()
@@ -86,13 +115,16 @@ func TestShouldGetSingleAlbumWithSqlite(t *testing.T) {
 }
 
 func TestShouldNotFindAlbumByIdWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
+	db := setupTestDB(t)
+	defer db.Close()
+
+	albumRepository := repository.NewAlbumSqliteRepository(db)
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()
 	r.GET("/v1/albums/:id", albumHandler.GetAlbumByID)
 
-	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/v1/albums/%v", "4"), nil)
+	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/v1/albums/%v", "1"), nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -106,39 +138,33 @@ func TestShouldNotFindAlbumByIdWithSqlite(t *testing.T) {
 }
 
 func TestShouldCreateAlbumWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
+	db := setupTestDB(t)
+	defer db.Close()
+
+	albumRepository := repository.NewAlbumSqliteRepository(db)
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
+
+	album1 := models.Album{
+		ID:     1,
+		Title:  "Blue Train",
+		Artist: "John Coltrane",
+		Price:  56.99,
+	}
+	albumRepository.CreateAlbum(&album1)
 
 	r := gin.Default()
 	r.GET("/v1/albums", albumHandler.GetAlbums)
 	r.POST("/v1/albums", albumHandler.PostAlbums)
 
 	newAlbum := models.Album{
-		ID:     4,
+		ID:     2,
 		Title:  "On and On",
 		Artist: "Jack Johnson",
 		Price:  32.99,
 	}
 
 	initialAlbums := []models.Album{
-		{
-			ID:     1,
-			Title:  "Blue Train",
-			Artist: "John Coltrane",
-			Price:  56.99,
-		},
-		{
-			ID:     2,
-			Title:  "Jeru",
-			Artist: "Gerry Mulligan",
-			Price:  17.99,
-		},
-		{
-			ID:     3,
-			Title:  "Sarah Vaughan and Clifford Brown",
-			Artist: "Sarah Vaughan",
-			Price:  39.99,
-		},
+		album1,
 	}
 
 	req, _ := http.NewRequest(http.MethodGet, "/v1/albums", nil)
@@ -182,8 +208,19 @@ func TestShouldCreateAlbumWithSqlite(t *testing.T) {
 }
 
 func TestShouldUpdateAlbumWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
+	db := setupTestDB(t)
+	defer db.Close()
+
+	albumRepository := repository.NewAlbumSqliteRepository(db)
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
+
+	expectedAlbum := models.Album{
+		ID:     1,
+		Title:  "Blue Train",
+		Artist: "John Coltrane",
+		Price:  56.99,
+	}
+	albumRepository.CreateAlbum(&expectedAlbum)
 
 	r := gin.Default()
 	r.PUT("/v1/albums/:id", albumHandler.UpdateAlbum)
@@ -211,8 +248,19 @@ func TestShouldUpdateAlbumWithSqlite(t *testing.T) {
 }
 
 func TestShouldDeleteAlbumWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
+	db := setupTestDB(t)
+	defer db.Close()
+
+	albumRepository := repository.NewAlbumSqliteRepository(db)
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
+
+	expectedAlbum := models.Album{
+		ID:     1,
+		Title:  "Blue Train",
+		Artist: "John Coltrane",
+		Price:  56.99,
+	}
+	albumRepository.CreateAlbum(&expectedAlbum)
 
 	r := gin.Default()
 	r.DELETE("/v1/albums/:id", albumHandler.DeleteAlbum)
@@ -231,7 +279,10 @@ func TestShouldDeleteAlbumWithSqlite(t *testing.T) {
 }
 
 func TestShouldNotDeleteAbsentAlbumWithSqlite(t *testing.T) {
-	albumRepository := repository.NewAlbumJsonRepository()
+	db := setupTestDB(t)
+	defer db.Close()
+
+	albumRepository := repository.NewAlbumSqliteRepository(db)
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	r := gin.Default()

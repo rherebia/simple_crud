@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"learing_go/simple_crud/internal/app/api/config"
+	"learing_go/simple_crud/internal/app/api/db"
 	"learing_go/simple_crud/internal/app/api/handlers"
 	"learing_go/simple_crud/internal/app/api/repository"
 
@@ -10,8 +12,14 @@ import (
 func RegisterRoutes(server *gin.Engine) {
 	v1 := server.Group("/v1")
 
-	albumRepository := repository.NewAlbumJsonRepository()
-	// albumRepository := repository.NewAlbumSqliteRepository()
+	var albumRepository repository.AlbumRepository
+	if config.Instance.StoreType == "SQLITE" {
+		DB := db.InitDB()
+		albumRepository = repository.NewAlbumSqliteRepository(DB)
+	} else {
+		albumRepository = repository.NewAlbumJsonRepository()
+	}
+
 	albumHandler := handlers.NewAlbumHandler(albumRepository)
 
 	v1.GET("/albums", albumHandler.GetAlbums)
